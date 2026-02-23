@@ -15,8 +15,8 @@ let package = Package(
     targets: [
         .binaryTarget(
             name: "LuqtaSDK",
-            url: "https://github.com/MTayyaBH/luqta-ios-sdk/releases/download/1.0.0/LuqtaSDK.xcframework.zip",
-            checksum: "86963562aa9a362b19c74ffd7ae924ef1148f7e5062cd7fde46ee00bc6a63117"
+            url: "https://github.com/MTayyaBH/luqta-ios-sdk/releases/download/1.0.1/LuqtaSDK.xcframework.zip",
+            checksum: "81d897ff05bebde02700c2aee8ec56f614586ee5646d36f46e29eda34de41c29"
         ),
     ]
 )
