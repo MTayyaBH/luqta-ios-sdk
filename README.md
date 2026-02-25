@@ -1,54 +1,11 @@
-# Luqta iOS SDK (Swift)
+# LuqtaSDK for iOS
 
-Official iOS SDK for the Luqta API — Integrate contests, quizzes, rewards, and gamification features into your iOS applications.
+Official iOS SDK for the [Luqta](https://github.com/MTayyaBH/luqta-ios-sdk) API — Add contests, quizzes, rewards, and gamification to your iOS app.
 
-**Version:** 1.1.0
-
-## Table of Contents
-
-- [Features](#features)
-- [Requirements](#requirements)
-- [Installation](#installation)
-- [Quick Start](#quick-start)
-- [Usage Modes](#usage-modes)
-  - [Preconfigured Mode](#1-preconfigured-mode---complete-ui-in-one-line)
-  - [Custom Mode](#2-custom-mode---build-your-own-ui)
-- [API Reference](#api-reference)
-  - [Contests API](#contests-api)
-  - [Levels API](#levels-api)
-  - [Quiz API](#quiz-api)
-  - [Rewards API](#rewards-api)
-  - [Notifications API](#notifications-api)
-  - [Profile API](#profile-api)
-  - [HTTP Methods](#http-methods)
-- [Available Widgets](#available-widgets)
-- [Models](#models)
-- [Theming & Branding](#theming--branding)
-- [Localization](#localization)
-- [Error Handling](#error-handling)
-- [Example App](#example-app)
-- [Support](#support)
-
----
-
-## Features
-
-- **Two Integration Modes**: Preconfigured (instant UI) or Custom (full control)
-- **Contest Management**: Browse, participate, and track contest progress
-- **Level Completion**: Text, QR code, Link, Image, and Quiz levels
-- **Rewards & Gamification**: Points, rewards, and achievements
-- **Beautiful SwiftUI UI**: Pre-built screens and widgets
-- **Multi-language**: English and Arabic support
-- **RTL Support**: Right-to-left layout for Arabic
-- **Secure**: Keychain token storage, rate limiting, request deduplication
-- **Swift Native**: Built with modern Swift using async/await
-- **Flexible Authentication**: Email or phone number
-
-## Requirements
-
-- iOS 15.0+
-- Xcode 14.0+
-- Swift 5.9+
+[![CocoaPods](https://img.shields.io/cocoapods/v/LuqtaSDK.svg)](https://cocoapods.org/pods/LuqtaSDK)
+[![Swift](https://img.shields.io/badge/Swift-5.9-orange.svg)](https://swift.org)
+[![Platform](https://img.shields.io/badge/platform-iOS%2015.0%2B-blue.svg)](https://developer.apple.com/ios/)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 ---
 
@@ -56,28 +13,19 @@ Official iOS SDK for the Luqta API — Integrate contests, quizzes, rewards, and
 
 ### CocoaPods
 
-Add to your `Podfile`:
-
 ```ruby
 pod 'LuqtaSDK', '~> 1.1.0'
 ```
 
-Then run:
-
-```bash
-pod install
-```
-
-> **Note:** Open the `.xcworkspace` file (not `.xcodeproj`) after running pod install.
-
 ### Swift Package Manager
 
-In Xcode:
-1. File > Add Package Dependencies
-2. Enter URL: `https://github.com/MTayyaBH/luqta-ios-sdk`
-3. Select version and add to your project
+In Xcode: **File > Add Package Dependencies** and enter:
 
-Or in `Package.swift`:
+```
+https://github.com/MTayyaBH/luqta-ios-sdk
+```
+
+Or add to `Package.swift`:
 
 ```swift
 dependencies: [
@@ -87,50 +35,20 @@ dependencies: [
 
 ---
 
-## Quick Start
+## Two Integration Modes
 
-### Minimum Setup (3 Steps)
-
-```swift
-import LuqtaSDK
-
-// Step 1: Create client
-let client = try LuqtaClient(config: LuqtaConfig(
-    apiKey: "your-api-key",
-    appId: "your-app-id"
-))
-
-// Step 2: Initialize SDK
-try await client.initializeSdk()
-
-// Step 3: Initialize user
-try await client.syncAndInitializeUser(UserProfile(
-    name: "John Doe",
-    email: "john@example.com",
-    policyAccept: true
-))
-
-// Done! Now use the SDK
-```
+| Mode | Description | Effort |
+|------|-------------|--------|
+| **Preconfigured** | Complete UI out of the box — just call `render()` | Minimal |
+| **Custom** | Use APIs to build your own UI | Full control |
 
 ---
 
-## Usage Modes
+## Mode 1: Preconfigured (Complete UI)
 
-The SDK supports **two modes** — choose based on your needs:
+Get a full-featured contest experience with **one method call**. The SDK renders all screens, handles navigation, API calls, and state.
 
-| Mode | Best For | Effort |
-|------|----------|--------|
-| **Preconfigured** | Quick integration, standard UI | Minimal — just call `render()` |
-| **Custom** | Full UI control, custom designs | More work — use APIs directly |
-
----
-
-## 1. Preconfigured Mode - Complete UI in One Line
-
-Use this mode to get a **complete, beautiful UI** with minimal code. The SDK handles everything: screens, navigation, API calls, and state management.
-
-### Complete Example
+### Step-by-Step
 
 ```swift
 import SwiftUI
@@ -148,38 +66,36 @@ struct ContestsView: View {
             } else if let error = error {
                 Text(error).foregroundColor(.red)
             } else if let client = client {
-                client.render()  // That's it!
+                // One line — renders the entire contest UI
+                client.render()
             }
         }
         .task {
-            await initializeLuqta()
+            await setup()
         }
     }
 
-    func initializeLuqta() async {
+    func setup() async {
         do {
+            // 1. Create client in preconfigured mode
             let config = LuqtaConfig(
                 mode: .preconfigured,
                 apiKey: "your-api-key",
                 appId: "your-app-id",
-                production: false,
                 branding: LuqtaBranding(
                     primaryColor: "#9333ea",
                     secondaryColor: "#4f46e5"
                 ),
                 locale: "en",
-                rtl: false,
-                onAction: { action in
-                    print("Action: \(action)")
-                },
-                onError: { error in
-                    print("Error: \(error)")
-                }
+                onAction: { action in print("Action: \(action)") },
+                onError: { error in print("Error: \(error)") }
             )
-
             let newClient = try LuqtaClient(config: config)
+
+            // 2. Initialize SDK
             _ = try await newClient.initializeSdk()
 
+            // 3. Initialize user
             try await newClient.syncAndInitializeUser(UserProfile(
                 name: "John Doe",
                 email: "john@example.com",
@@ -196,28 +112,23 @@ struct ContestsView: View {
 }
 ```
 
-### What `render()` Provides
+### What `render()` Includes
 
-| Feature | Description |
-|---------|-------------|
-| Contest carousel | Horizontal scrollable contest cards |
-| Contest detail page | Full detail with levels, progress, prizes |
-| Level completion flows | Text, QR code, Link, Image upload |
-| Quiz interface | Questions with timer and scoring |
-| Progress tracking | Visual progress bars per contest |
-| Congratulations screen | Animated celebration on level/contest completion |
-| Access code handling | Bottom sheet for private contest codes |
-| Pull-to-refresh | Swipe down to refresh contests |
-| Countdown timers | Live countdowns on contest cards |
-| Error handling | Automatic retry and error display |
+- Contest carousel with banner images
+- Contest detail pages with levels and progress
+- Level completion flows — Text, QR code, Link, Image upload
+- Quiz interface with timer and scoring
+- Congratulations screen with animations
+- Private contest access code entry
+- Pull-to-refresh and countdown timers
+- Full navigation and error handling
 
-### Session Restore
-
-The SDK automatically stores tokens in Keychain. On subsequent app launches, restore the session without API calls:
+### Session Restore (Skip Login on Relaunch)
 
 ```swift
+// Tokens are stored in Keychain automatically
 if client.tryRestoreSession() {
-    // Session restored — skip initializeSdk()
+    // Restored — no API call needed
 } else {
     _ = try await client.initializeSdk()
 }
@@ -225,80 +136,47 @@ if client.tryRestoreSession() {
 
 ---
 
-## 2. Custom Mode - Build Your Own UI
+## Mode 2: Custom (Build Your Own UI)
 
-Use this mode when you need **complete control** over the UI. Use SDK APIs for data and optionally embed individual widgets.
+Use the SDK APIs directly to fetch data and build your own interface.
 
 ### Setup
 
 ```swift
 import LuqtaSDK
 
-// Custom mode is the default
+// 1. Create client (custom mode is default)
 let client = try LuqtaClient(config: LuqtaConfig(
     apiKey: "your-api-key",
     appId: "your-app-id"
 ))
 
-// Initialize SDK
+// 2. Initialize SDK
 _ = try await client.initializeSdk()
 
-// Set user and initialize
+// 3. Set user and initialize
 try client.setUser(LuqtaUser(email: "john@example.com"))
 try await client.initializeUser()
-```
 
-### Or Sync + Initialize in One Call
-
-```swift
+// Or sync + initialize in one call:
 try await client.syncAndInitializeUser(UserProfile(
     name: "John Doe",
     email: "john@example.com",
-    phoneNumber: "+923147940690",
-    gender: "male",
-    country: "PK",
     policyAccept: true
 ))
 ```
 
----
-
-## API Reference
-
-### Client Methods
-
-| Method | Description |
-|--------|-------------|
-| `initializeSdk()` | Initialize SDK and obtain app token |
-| `initializeUser()` | Initialize user session |
-| `syncUser(userData)` | Sync user profile to backend |
-| `syncAndInitializeUser(userData)` | Sync + initialize in one call |
-| `setUser(user)` | Set user identification (email or phone) |
-| `tryRestoreSession()` | Restore session from Keychain tokens |
-| `isSdkReady()` | Check if SDK is initialized |
-| `isInitialized()` | Check if user is initialized |
-| `clearUserToken()` | Clear user token (logout) |
-| `render()` | Get pre-configured SwiftUI view |
-
----
-
 ### Contests API
-
-Access via `client.contests`:
 
 ```swift
 // Get all contests (paginated)
 let response = try await client.contests.getAll(page: 1, perPage: 10)
-let contests = response.data.items  // [[String: Any]]
-let hasMore = response.data.hasNextPage
+// response.data.items — array of contests
+// response.data.hasNextPage — pagination
 
-// Get trending contests
+// Trending / Premium / Recent
 let trending = try await client.contests.getTrending()
-
-// Get premium/VIP contests
 let premium = try await client.contests.getPremium()
-
-// Get recent contests
 let recent = try await client.contests.getRecent()
 
 // Participate in a contest
@@ -307,178 +185,109 @@ let result = try await client.contests.participate(contestId)
 // Participate with access code (private contest)
 let result = try await client.contests.participate(contestId, accessCode: "ABC123")
 
-// Get contest progress
+// Get contest progress and details
 let progress = try await client.contests.getProgress(contestId)
-
-// Get contest compete data (levels + progress)
 let compete = try await client.contests.compete(contestId)
+let details = try await client.getContestDetailsProgress(contestId)
 
-// Get user's contest history
+// Contest history
 let history = try await client.contests.getHistory()
 ```
 
-Or use convenience methods on the client:
-
-```swift
-// Fetch contests with pagination
-let response = try await client.fetchContests(page: 1, perPage: 10)
-
-// Get public contests (no user auth required)
-let public = try await client.getPublicContests()
-
-// Get contest details with user progress
-let details = try await client.getContestDetailsProgress(contestId, accessCode: nil)
-
-// Participate
-let result = try await client.participateContest(contestId)
-```
-
----
-
 ### Levels API
-
-Access via `client.levels`:
 
 ```swift
 // Complete a text level
-let result = try await client.levels.complete(levelId, data: [
-    "textContent": "my answer"
-])
+try await client.levels.complete(levelId, data: ["textContent": "my answer"])
 
 // Complete a link level
-let result = try await client.levels.complete(levelId, data: [
-    "link": "https://example.com"
-])
+try await client.levels.complete(levelId, data: ["link": "https://example.com"])
 
 // Complete a QR level
-let result = try await client.levels.complete(levelId, data: [
-    "qrData": "scanned-qr-content"
-])
+try await client.levels.complete(levelId, data: ["qrData": "scanned-content"])
 
 // Complete an image level
-let result = try await client.levels.completeWithImage(levelId, imageUrl: "https://...")
+try await client.levels.completeWithImage(levelId, imageUrl: "https://...")
 
-// Update level progress (mark as in-progress)
-let result = try await client.levels.updateProgress(levelId)
+// Mark level as in-progress
+try await client.levels.updateProgress(levelId)
 
-// Get congratulation data after completion
-let congrats = try await client.levels.getCongratulation(levelId: levelId, contestId: contestId)
+// Get congratulation data
+try await client.levels.getCongratulation(levelId: levelId, contestId: contestId)
 
-// Validate a QR code
-let result = try await client.levels.scanQR("qr-data-string")
+// Scan QR code
+try await client.levels.scanQR("qr-data")
 ```
-
----
 
 ### Quiz API
 
-Access via `client.quiz`:
-
 ```swift
-// Start a quiz attempt
+// Start quiz
 let attempt = try await client.quiz.start(quizId)
-// Returns: attemptId, questions, timer info
 
-// Submit an answer
-let result = try await client.quiz.submitAnswer(
+// Submit answer
+try await client.quiz.submitAnswer(
     attemptId: attemptId,
     questionId: questionId,
     optionId: selectedOptionId
 )
 
-// Submit/complete the quiz
+// Complete quiz
 let result = try await client.quiz.submit(attemptId)
-// Returns: score, passed, totalMarks
 ```
-
----
 
 ### Rewards API
 
-Access via `client.rewards`:
-
 ```swift
-// Get available rewards (no user auth required)
+// Get available rewards
 let rewards = try await client.rewards.getList()
 
-// Get user earnings and points balance
+// Get user earnings
 let earnings = try await client.rewards.getEarnings()
-// Returns: totalPoints, availablePoints, redeemedPoints
 
 // Redeem a reward
-let result = try await client.rewards.redeem(rewardId, points: 100)
+try await client.rewards.redeem(rewardId, points: 100)
 
-// Get reward redemption history
+// Reward history
 let history = try await client.rewards.getHistory()
 
-// Get prize history
+// Prize history
 let prizes = try await client.rewards.getPrizeHistory()
 ```
 
-Or use convenience methods:
-
-```swift
-let categories = try await client.getCategories()
-let rewards = try await client.getRewardsList()
-```
-
----
-
 ### Notifications API
 
-Access via `client.notifications`:
-
 ```swift
-// Get all notifications
+// Get notifications
 let notifications = try await client.notifications.getAll()
 
-// Mark notifications as read
-let result = try await client.notifications.markAsRead([notificationId1, notificationId2])
+// Mark as read
+try await client.notifications.markAsRead([id1, id2])
 
-// Update notification settings
-let result = try await client.notifications.updateSettings([
-    "push_enabled": true,
-    "email_enabled": false
-])
+// Update settings
+try await client.notifications.updateSettings(["push_enabled": true])
 ```
-
----
 
 ### Profile API
 
-Access via `client.profile`:
-
 ```swift
-// Get user profile
+// Get profile
 let profile = try await client.profile.get()
 
-// Get user activities
+// Get activities and progress
 let activities = try await client.profile.getActivities()
-
-// Get user progress across all contests
 let progress = try await client.profile.getProgress()
 
 // Submit feedback
-let result = try await client.profile.submitFeedback(rating: 5, feedback: "Great app!")
+try await client.profile.submitFeedback(rating: 5, feedback: "Great!")
 
-// Delete account (irreversible)
-let result = try await client.profile.deleteAccount()
+// Delete account
+try await client.profile.deleteAccount()
 ```
 
----
-
-### HTTP Methods
-
-For custom API calls:
+### Raw HTTP Methods
 
 ```swift
-// Application-level request (no user auth required)
-let data = try await client.applicationRequest("/sdk/app/contest/all", method: "GET")
-
-// User-level request (requires user initialization)
-let data = try await client.userRequest("/sdk/app/contest/history", method: "GET")
-
-// Shorthand methods
 let data = try await client.get("/endpoint", params: ["key": "value"])
 let data = try await client.post("/endpoint", body: ["key": "value"])
 let data = try await client.put("/endpoint", body: ["key": "value"])
@@ -488,52 +297,7 @@ let data = try await client.patch("/endpoint", body: ["key": "value"])
 
 ---
 
-## Available Widgets
-
-Use these pre-built SwiftUI views in your custom UI:
-
-### Screens
-
-| Widget | Description |
-|--------|-------------|
-| `ContestsScreen` | Full contests listing with carousel and see-all |
-| `ContestDetailScreen` | Contest detail with levels, progress, and completion flows |
-
-### Cards & Items
-
-| Widget | Description |
-|--------|-------------|
-| `ContestCard` | Contest card with banner carousel, timer, pills |
-| `LevelItemView` | Level row with type icon, name, and completion status |
-| `AccessCodeSheet` | Bottom sheet for entering private contest access codes |
-
-### Level Completion Views
-
-| Widget | Level Type | Description |
-|--------|------------|-------------|
-| `TextLevelView` | Text | Text input submission |
-| `QRLevelView` | QR Code | Camera QR scanner |
-| `LinkLevelView` | Link | Link visit verification |
-| `ImageLevelView` | Image | Camera/gallery image upload |
-
-### Interactive Widgets
-
-| Widget | Description |
-|--------|-------------|
-| `QuizWidget` | Quiz questions with options, timer, and scoring |
-| `CongratulationDialog` | Animated celebration on completion |
-| `LuqtaToast` | Toast notification overlay |
-
-### Utility Widgets
-
-| Widget | Description |
-|--------|-------------|
-| `RemoteImage` | Async image loader with placeholder |
-| `ShimmerView` | Loading shimmer animation |
-
----
-
-## Models
+## Configuration
 
 ### LuqtaConfig
 
@@ -542,17 +306,19 @@ LuqtaConfig(
     mode: .preconfigured,           // .preconfigured or .custom (default)
     apiKey: "your-api-key",         // Required
     appId: "your-app-id",          // Required
-    production: false,              // Default: false
+    production: false,              // Default: false (use staging)
     user: LuqtaUser(               // Optional: set user at init
         email: "user@example.com"
     ),
-    baseURL: nil,                   // Optional: custom base URL
-    timeout: 30,                    // Default: 30 seconds
-    headers: ["X-Custom": "value"], // Optional: custom headers
-    branding: LuqtaBranding(...),   // Optional: UI customization
+    baseURL: nil,                   // Optional: override base URL
+    timeout: 30,                    // Request timeout in seconds
+    headers: ["X-Custom": "val"],   // Custom headers
+    branding: LuqtaBranding(        // UI customization
+        primaryColor: "#9333ea",
+        secondaryColor: "#4f46e5"
+    ),
     locale: "en",                   // "en" or "ar"
-    rtl: false,                     // RTL layout
-    screens: ["contests", "quizzes", "rewards", "profile"],
+    rtl: false,                     // Right-to-left layout
     onAction: { action in },        // Action callback
     onError: { error in }           // Error callback
 )
@@ -560,38 +326,25 @@ LuqtaConfig(
 
 ### LuqtaUser
 
-Identify users by email, phone number, or both:
-
 ```swift
-// Email only
+// By email
 LuqtaUser(email: "user@example.com")
 
-// Phone only (international format)
+// By phone (international format with +)
 LuqtaUser(phoneNumber: "+923147940690")
 
 // Both
 LuqtaUser(email: "user@example.com", phoneNumber: "+923147940690")
 ```
 
-**Phone number format:** Must start with `+` followed by country code (up to 15 digits).
-
-| Country | Example |
-|---------|---------|
-| Pakistan | `+923147940690` |
-| USA | `+11234567890` |
-| UK | `+441234567890` |
-| UAE | `+971501234567` |
-
 ### UserProfile
-
-Full user profile for sync:
 
 ```swift
 UserProfile(
     name: "John Doe",
     email: "john@example.com",
     phoneNumber: "+923147940690",
-    dob: "1990-01-01",              // ISO 8601
+    dob: "1990-01-01",
     gender: "male",
     country: "PK",
     verified: true,
@@ -603,11 +356,9 @@ UserProfile(
 
 ### LuqtaBranding
 
-Customize the look and feel:
-
 ```swift
 LuqtaBranding(
-    primaryColor: "#9333ea",
+    primaryColor: "#9333ea",        // Hex color
     secondaryColor: "#4f46e5",
     backgroundColor: "#ffffff",
     textColor: "#111827",
@@ -618,26 +369,40 @@ LuqtaBranding(
 )
 ```
 
-### LuqtaMode
+---
 
-```swift
-.custom          // Use SDK APIs with your own UI
-.preconfigured   // Auto-rendered UI — call render()
-```
+## Pre-built Widgets
+
+Use these SwiftUI views in custom mode:
+
+| Widget | Description |
+|--------|-------------|
+| `ContestsScreen` | Full contests listing with carousel |
+| `ContestDetailScreen` | Contest detail with levels and progress |
+| `ContestCard` | Single contest card |
+| `LevelItemView` | Level row with status |
+| `QuizWidget` | Quiz with timer and scoring |
+| `TextLevelView` | Text input level |
+| `QRLevelView` | QR code scanner level |
+| `LinkLevelView` | Link visit level |
+| `ImageLevelView` | Image upload level |
+| `AccessCodeSheet` | Private contest access code input |
+| `CongratulationDialog` | Animated completion celebration |
+| `LuqtaToast` | Toast notification |
+| `ShimmerView` | Loading shimmer animation |
+| `RemoteImage` | Async image loader |
 
 ---
 
-## Theming & Branding
+## Theming
 
-### Set at Initialization
+### Set at Init
 
 ```swift
 LuqtaConfig(
     branding: LuqtaBranding(
         primaryColor: "#9333ea",
-        secondaryColor: "#6366f1",
-        backgroundColor: "#ffffff",
-        textColor: "#111827"
+        secondaryColor: "#6366f1"
     )
 )
 ```
@@ -652,168 +417,93 @@ client.setBranding(LuqtaBranding(primaryColor: "#FF5722"))
 
 ## Localization
 
-### Set at Initialization
-
-```swift
-LuqtaConfig(
-    locale: "ar",   // "en" or "ar"
-    rtl: true       // Enable RTL for Arabic
-)
-```
-
-### Update at Runtime
-
-```swift
-client.setLocale("ar")
-client.setRtl(true)
-```
-
-### Supported Languages
-
 | Language | Code | RTL |
 |----------|------|-----|
 | English | `en` | No |
 | Arabic | `ar` | Yes |
 
+```swift
+// At init
+LuqtaConfig(locale: "ar", rtl: true)
+
+// At runtime
+client.setLocale("ar")
+client.setRtl(true)
+```
+
 ---
 
 ## Error Handling
-
-### Using Do-Catch
 
 ```swift
 do {
     _ = try await client.initializeSdk()
 } catch let error as LuqtaError {
-    print("Code: \(error.code)")       // e.g. "SDK_INIT_FAILED"
-    print("Message: \(error.message)") // Human-readable message
-    print("Status: \(error.status)")   // HTTP status code (optional)
+    print(error.code)    // "SDK_INIT_FAILED"
+    print(error.message) // Human-readable message
+    print(error.status)  // HTTP status (optional)
 }
 ```
 
-### Using Callbacks
-
-```swift
-LuqtaConfig(
-    onAction: { action in
-        // action is [String: Any] with type & data
-        print("User action: \(action)")
-    },
-    onError: { error in
-        if let luqtaError = error as? LuqtaError {
-            showAlert(luqtaError.message)
-        }
-    }
-)
-```
-
 ### Error Codes
-
-#### SDK Initialization
-
-| Code | Description |
-|------|-------------|
-| `SDK_INIT_FAILED` | SDK initialization failed |
-| `SDK_NOT_INITIALIZED` | SDK not initialized before making requests |
-| `MISSING_SDK_TOKEN` | No SDK token received |
-
-#### User
-
-| Code | Description |
-|------|-------------|
-| `USER_INIT_FAILED` | User initialization failed |
-| `USER_NOT_INITIALIZED` | User not initialized before making requests |
-| `USER_NOT_SYNCED` | User needs to be synced first |
-| `MISSING_USER_IDENTIFIER` | Email or phone number required |
-| `USER_SYNC_FAILED` | User profile sync failed |
-
-#### Validation
 
 | Code | Description |
 |------|-------------|
 | `MISSING_API_KEY` | API key not provided |
 | `MISSING_APP_ID` | App ID not provided |
-| `INVALID_EMAIL_FORMAT` | Invalid email format |
-| `INVALID_PHONE_FORMAT` | Invalid phone number format |
-| `INVALID_PARAMETER` | Invalid parameter value |
-
-#### Network
-
-| Code | Description |
-|------|-------------|
+| `SDK_INIT_FAILED` | SDK initialization failed |
+| `SDK_NOT_INITIALIZED` | Call initializeSdk() first |
+| `USER_INIT_FAILED` | User initialization failed |
+| `USER_NOT_INITIALIZED` | Call initializeUser() first |
+| `USER_NOT_SYNCED` | User needs sync first |
+| `MISSING_USER_IDENTIFIER` | Email or phone required |
+| `INVALID_EMAIL_FORMAT` | Bad email format |
+| `INVALID_PHONE_FORMAT` | Bad phone format |
+| `USER_SYNC_FAILED` | Profile sync failed |
 | `REQUEST_FAILED` | API request failed |
 | `TIMEOUT` | Request timed out |
-| `NETWORK_ERROR` | No network connection |
-
-#### Security
-
-| Code | Description |
-|------|-------------|
+| `NETWORK_ERROR` | No connection |
 | `RATE_LIMIT_EXCEEDED` | Too many requests |
-| `TOKEN_VALIDATION_FAILED` | Token validation error |
-| `DUPLICATE_REQUEST` | Duplicate request detected |
 
 ---
 
-## Configuration Methods
+## Client Methods Reference
 
-Update SDK settings at runtime:
-
-```swift
-// API key
-try client.setApiKey("new-api-key")
-client.getApiKey()  // Returns masked key
-
-// App ID
-try client.setAppId("new-app-id")
-client.getAppId()
-
-// Production mode
-client.setProduction(true)
-client.isProductionMode()
-
-// Timeout
-try client.setTimeout(60)  // seconds
-client.getTimeout()
-
-// Base URL
-client.getBaseURL()
-
-// Mode
-client.getMode()  // .custom or .preconfigured
-
-// Security status
-let status = client.getSecurityStatus()
-```
+| Method | Description |
+|--------|-------------|
+| `initializeSdk()` | Initialize SDK with API key |
+| `initializeUser()` | Initialize user session |
+| `syncUser(profile)` | Sync user profile to backend |
+| `syncAndInitializeUser(profile)` | Sync + initialize in one call |
+| `setUser(user)` | Set user (email or phone) |
+| `tryRestoreSession()` | Restore from Keychain |
+| `isSdkReady()` | SDK initialized? |
+| `isInitialized()` | User initialized? |
+| `clearUserToken()` | Logout user |
+| `render()` | Get preconfigured SwiftUI view |
+| `setBranding(branding)` | Update UI branding |
+| `setLocale(locale)` | Change language |
+| `setRtl(bool)` | Toggle RTL layout |
+| `setProduction(bool)` | Switch environment |
+| `getSecurityStatus()` | Debug security info |
 
 ---
+
+## Requirements
+
+- iOS 15.0+
+- Xcode 14.0+
+- Swift 5.9+
 
 ## Example App
 
-See the [example app](../examples/ios_example_swift/) for a complete implementation including:
-
-- User authentication (login/signup)
-- SDK initialization with session restore
-- Pre-configured UI with `render()`
-- Branding customization
-- Error handling
-
-### Running the Example
-
-```bash
-cd examples/ios_example_swift
-pod install
-open LuqtaExample.xcworkspace
-```
-
----
-
-## Support
-
-- **Email**: support@luqta.com
-- **Issues**: [GitHub Issues](https://github.com/MTayyaBH/luqta-ios-sdk/issues)
-- **Swift Package Index**: [swiftpackageindex.com/MTayyaBH/luqta-ios-sdk](https://swiftpackageindex.com/MTayyaBH/luqta-ios-sdk)
+See the [example app](https://github.com/MTayyaBH/luqta-sdk/tree/main/examples/ios_example_swift) for a complete implementation with login, signup, and contest rendering.
 
 ## License
 
-MIT License - See [LICENSE](LICENSE) file for details.
+MIT License — See [LICENSE](LICENSE) for details.
+
+## Support
+
+- Email: support@luqta.com
+- Issues: [GitHub Issues](https://github.com/MTayyaBH/luqta-ios-sdk/issues)
