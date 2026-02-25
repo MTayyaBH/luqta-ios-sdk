@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'LuqtaSDK'
-  s.version          = '1.0.1'
+  s.version          = '1.0.2'
   s.summary          = 'Official iOS SDK for Luqta API with pre-configured UI'
   s.description      = <<-DESC
 The official iOS SDK for Luqta API. Provides a complete pre-configured SwiftUI UI
@@ -14,17 +14,13 @@ Features:
 - QR code scanning and image upload
 - Full async/await support
 - RTL and localization support (EN/AR)
-                       DESC
-
+  DESC
   s.homepage         = 'https://github.com/MTayyaBH/luqta-ios-sdk'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'Luqta' => 'support@luqta.com' }
-  s.source           = { :http => 'https://github.com/MTayyaBH/luqta-ios-sdk/releases/download/1.0.1/LuqtaSDK.xcframework.zip' }
-
+  s.source           = { :http => 'https://github.com/MTayyaBH/luqta-ios-sdk/releases/download/1.0.2/LuqtaSDK.xcframework.zip' }
   s.ios.deployment_target = '13.0'
   s.swift_version = '5.9'
-
   s.vendored_frameworks = 'LuqtaSDK.xcframework'
-
   s.frameworks = 'Foundation', 'Security', 'AVFoundation', 'UIKit', 'SwiftUI'
 end

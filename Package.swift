@@ -3,20 +3,15 @@ import PackageDescription
 
 let package = Package(
     name: "LuqtaSDK",
-    platforms: [
-        .iOS(.v13)
-    ],
+    platforms: [.iOS(.v13)],
     products: [
-        .library(
-            name: "LuqtaSDK",
-            targets: ["LuqtaSDK"]
-        ),
+        .library(name: "LuqtaSDK", targets: ["LuqtaSDK"]),
     ],
     targets: [
         .binaryTarget(
             name: "LuqtaSDK",
-            url: "https://github.com/MTayyaBH/luqta-ios-sdk/releases/download/1.0.1/LuqtaSDK.xcframework.zip",
-            checksum: "81d897ff05bebde02700c2aee8ec56f614586ee5646d36f46e29eda34de41c29"
+            url: "https://github.com/MTayyaBH/luqta-ios-sdk/releases/download/1.0.2/LuqtaSDK.xcframework.zip",
+            checksum: "c3563b06a29f7c1184178124e0e3c893922a84b7078e13bc12a00a213587e25c"
         ),
     ]
 )
