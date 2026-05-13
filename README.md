@@ -14,7 +14,7 @@ Official iOS SDK for the [Luqta](https://github.com/MTayyaBH/luqta-ios-sdk) API 
 ### CocoaPods
 
 ```ruby
-pod 'LuqtaSDK', '~> 1.1.0'
+pod 'LuqtaSDK', '~> 1.1.1'
 ```
 
 ### Swift Package Manager
@@ -29,7 +29,7 @@ Or add to `Package.swift`:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/MTayyaBH/luqta-ios-sdk", from: "1.1.0")
+    .package(url: "https://github.com/MTayyaBH/luqta-ios-sdk", from: "1.1.1")
 ]
 ```
 
